@@ -1,0 +1,630 @@
+<div id="app">
+  <div class="loading">warming the oven…</div>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+  :root{
+    --cream:#f6efe2;
+    --paper:#fffdf8;
+    --ink:#2c241b;
+    --soft:#7a6c58;
+    --line:#e6dcc8;
+    --crust:#c66b3d;
+    --crust-dark:#a8552c;
+    --salt:#3f5e6b;
+    --done:#5b8a5a;
+    --shadow:0 14px 40px -18px rgba(80,55,25,.45);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  #app{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 12% 8%, rgba(198,107,61,.10), transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(63,94,107,.10), transparent 45%),
+      var(--cream);
+    min-height:100vh;
+    padding:26px 16px 60px;
+    line-height:1.5;
+  }
+  .loading{font-family:'Fraunces',serif;font-style:italic;text-align:center;padding:80px 0;color:var(--soft);font-size:20px}
+
+  .wrap{max-width:560px;margin:0 auto}
+
+  /* header */
+  .brand{text-align:center;margin-bottom:22px}
+  .brand .kicker{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--crust);font-weight:600}
+  .brand h1{font-family:'Fraunces',serif;font-weight:600;font-size:46px;line-height:1;margin:8px 0 6px;letter-spacing:-.02em}
+  .brand .sub{font-family:'Fraunces',serif;font-style:italic;color:var(--soft);font-size:17px}
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:var(--shadow);
+    margin-bottom:16px;
+  }
+  .card h2{font-family:'Fraunces',serif;font-weight:600;font-size:21px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .card .hint{color:var(--soft);font-size:13.5px;margin-bottom:16px}
+
+  /* menu items */
+  .item{
+    display:flex;align-items:center;gap:14px;
+    padding:14px 0;border-top:1px dashed var(--line);
+  }
+  .item:first-of-type{border-top:none}
+  .item .info{flex:1;min-width:0}
+  .item .name{font-weight:600;font-size:15.5px}
+  .item .price{color:var(--crust);font-weight:600;font-size:13.5px}
+  .item .desc{color:var(--soft);font-size:12.5px}
+
+  .stepper{display:flex;align-items:center;gap:0;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;flex-shrink:0}
+  .stepper button{
+    width:34px;height:34px;border:none;background:transparent;cursor:pointer;
+    font-size:20px;color:var(--crust);font-weight:600;line-height:1;transition:background .15s;
+  }
+  .stepper button:hover{background:#f3e7d5}
+  .stepper button:disabled{color:#d8cdb8;cursor:not-allowed;background:transparent}
+  .stepper .qty{width:30px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+  .item.active{}
+  .item.active .stepper{border-color:var(--crust)}
+
+  /* fulfilment toggle */
+  .toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .toggle label{
+    border:1.5px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;
+    display:block;transition:.15s;background:var(--paper);
+  }
+  .toggle label:hover{border-color:#dcc9a8}
+  .toggle input{display:none}
+  .toggle .t-title{font-weight:600;font-size:14.5px}
+  .toggle .t-sub{font-size:12px;color:var(--soft);margin-top:3px}
+  .toggle input:checked + .t-title{color:var(--crust-dark)}
+  .toggle label:has(input:checked){border-color:var(--crust);background:#fdf4ea;box-shadow:0 0 0 3px rgba(198,107,61,.10)}
+
+  /* fields */
+  .field{margin-top:14px}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink)}
+  .field .req{color:var(--crust)}
+  .field input,.field textarea{
+    width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;
+    font-family:inherit;font-size:15px;color:var(--ink);background:var(--paper);transition:.15s;
+  }
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--crust);box-shadow:0 0 0 3px rgba(198,107,61,.10)}
+  .field textarea{resize:vertical;min-height:62px}
+
+  /* total bar */
+  .total{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:16px 0 4px;border-top:1px solid var(--line);margin-top:6px;
+  }
+  .total .label{font-weight:600}
+  .total .amount{font-family:'Fraunces',serif;font-weight:600;font-size:30px}
+  .total .breakdown{font-size:12px;color:var(--soft);text-align:right;margin-top:2px}
+
+  .btn{
+    width:100%;border:none;border-radius:14px;padding:16px;cursor:pointer;
+    font-family:inherit;font-weight:700;font-size:16px;letter-spacing:.01em;transition:.15s;
+  }
+  .btn-primary{background:var(--crust);color:#fff;box-shadow:0 8px 20px -8px rgba(198,107,61,.7)}
+  .btn-primary:hover{background:var(--crust-dark)}
+  .btn-primary:disabled{background:#e3d6c2;color:#fff;box-shadow:none;cursor:not-allowed}
+  .btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--soft);font-weight:600}
+  .btn-ghost:hover{border-color:var(--crust);color:var(--crust)}
+
+  .err{color:#b23b3b;font-size:13px;margin-top:10px;text-align:center;min-height:18px}
+
+  /* confirmation */
+  .confirm{text-align:center;padding:10px 4px}
+  .confirm .big{font-size:46px}
+  .confirm h2{font-family:'Fraunces',serif;font-size:26px;margin:8px 0 4px}
+  .confirm p{color:var(--soft);font-size:14.5px}
+  .receipt{text-align:left;background:#fdf7ec;border:1px dashed var(--crust);border-radius:14px;padding:16px;margin:18px 0;font-size:14px}
+  .receipt .line{display:flex;justify-content:space-between;padding:3px 0}
+  .receipt .grand{border-top:1px solid var(--line);margin-top:8px;padding-top:8px;font-weight:700}
+  .info-block{text-align:left;font-size:13px;color:var(--soft);background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:12px}
+  .info-block strong{color:var(--ink)}
+  .info-block .row{margin:6px 0}
+
+  /* footer owner link */
+  .foot{text-align:center;margin-top:18px}
+  .foot a{color:var(--soft);font-size:12px;text-decoration:none;border-bottom:1px dotted var(--soft);cursor:pointer}
+  .foot a:hover{color:var(--crust)}
+
+  /* welcome / bio */
+  .welcome{background:#fdf7ec;border-color:#ecdcc0}
+  .welcome .w-intro{font-family:'Fraunces',serif;font-size:16px;line-height:1.45;margin-bottom:10px}
+  .welcome .w-dm{font-size:13px;color:var(--soft);margin-bottom:14px}
+  .welcome .w-block{border-top:1px dashed var(--crust);padding-top:12px;font-size:13.5px}
+  .welcome .w-row{margin:6px 0}
+  .welcome .w-sub{color:var(--soft);font-size:12.5px;margin:0 0 8px 20px}
+
+  /* admin */
+  .admin-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .admin-head h1{font-family:'Fraunces',serif;font-size:28px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  .stat .n{font-family:'Fraunces',serif;font-size:26px;font-weight:600}
+  .stat .l{font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+
+  .bake .brow{display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed var(--line);font-size:14px}
+  .bake .brow:first-of-type{border-top:none}
+  .bake .brow .c{font-weight:700;font-variant-numeric:tabular-nums;color:var(--crust)}
+
+  .order{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+  .order.done{opacity:.55}
+  .order .otop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .order .who{font-weight:700;font-size:15px}
+  .order .meta{font-size:12.5px;color:var(--soft);margin-top:2px}
+  .order .tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .tag-pickup{background:#eef3ec;color:var(--done)}
+  .tag-delivery{background:#eef1f3;color:var(--salt)}
+  .order ul{list-style:none;margin:10px 0 4px;font-size:13.5px}
+  .order ul li{display:flex;justify-content:space-between;padding:2px 0}
+  .order .obot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  .order .ot{font-weight:700}
+  .mark{font-size:12px;font-weight:600;border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--soft)}
+  .mark:hover{border-color:var(--done);color:var(--done)}
+  .order.done .mark{border-color:var(--done);color:var(--done)}
+  .empty{text-align:center;color:var(--soft);padding:30px;font-family:'Fraunces',serif;font-style:italic}
+  .toolbar{display:flex;gap:8px;margin-bottom:14px}
+  .toolbar .btn{padding:10px;font-size:13px}
+</style>
+
+<script>
+(function(){
+  const MENU = [
+    {key:'original', name:'original', price:4, desc:'the classic salt bread'},
+    {key:'hamcheese', name:'ham n cheese', price:6, desc:'savoury & melty'},
+    {key:'eggmayo', name:'egg mayo', price:7, desc:'creamy egg mayo'},
+    {key:'bundle', name:'bundle of 3', price:15, desc:'all flavours, best value'},
+  ];
+  const DELIVERY_FEE = 3;
+  const app = document.getElementById('app');
+  const cart = {};
+  MENU.forEach(m=>cart[m.key]=0);
+  let fulfilment = 'pickup';
+
+  // ============================================================
+  //  PASTE YOUR GOOGLE BACKEND LINK BETWEEN THE QUOTES BELOW
+  //  (it ends in /exec — see the setup steps from Claude)
+  const BACKEND_URL = "";
+  // ============================================================
+
+  // load orders from the Google backend via JSONP (avoids browser blocking)
+  function jsonp(url){
+    return new Promise((resolve, reject)=>{
+      const cb = 'cb_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+      const s = document.createElement('script');
+      let done = false;
+      function cleanup(){ try{ delete window[cb]; }catch(_){ window[cb]=undefined; } if(s.parentNode) s.parentNode.removeChild(s); }
+      window[cb] = (data)=>{ done=true; resolve(data); cleanup(); };
+      s.onerror = ()=>{ if(!done){ cleanup(); reject(new Error('network')); } };
+      s.src = url + (url.indexOf('?')>-1?'&':'?') + 'callback=' + cb + '&t=' + Date.now();
+      document.body.appendChild(s);
+      setTimeout(()=>{ if(!done){ cleanup(); reject(new Error('timeout')); } }, 12000);
+    });
+  }
+  // send an order / status update to the Google backend
+  function postBackend(payload){
+    return fetch(BACKEND_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    });
+  }
+
+  // ---------- storage helpers (shared storage with localStorage fallback) ----------
+  const hasShared = (typeof window !== 'undefined' && window.storage && typeof window.storage.set === 'function');
+
+  async function safeGet(key){
+    if(hasShared){
+      try{ const r = await window.storage.get(key, true); if(r) return r; }catch(e){}
+    }
+    try{ const v = localStorage.getItem(key); return v==null ? null : {key, value:v}; }catch(e){ return null; }
+  }
+  async function safeSet(key, value){
+    if(hasShared){
+      try{ const r = await window.storage.set(key, value, true); if(r){ try{localStorage.setItem(key,value);}catch(_){} return r; } }catch(e){}
+    }
+    try{ localStorage.setItem(key, value); return {key, value}; }catch(e){ return null; }
+  }
+  async function listOrderKeys(){
+    let keys = [];
+    if(hasShared){
+      try{ const res = await window.storage.list('order:', true); if(res && res.keys) keys = res.keys; }catch(e){}
+    }
+    try{
+      for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k && k.indexOf('order:')===0 && keys.indexOf(k)===-1) keys.push(k); }
+    }catch(e){}
+    return keys;
+  }
+  async function listOrders(){
+    if(BACKEND_URL){
+      try{
+        const data = await jsonp(BACKEND_URL);
+        const orders = (Array.isArray(data)?data:[]).map(o=>{
+          const q = o.qtys || {};
+          const items = MENU.filter(m=> (q[m.key]||0) > 0).map(m=>({key:m.key,label:m.name,price:m.price,qty:q[m.key]}));
+          return {
+            id:o.id, name:o.name, contact:o.contact, fulfilment:o.fulfilment,
+            address:o.address||'', items,
+            deliveryFee: o.fulfilment==='delivery' ? DELIVERY_FEE : 0,
+            total: Number(o.total)||0, status:o.status||'new', createdAt:Number(o.createdAt)||0
+          };
+        });
+        orders.sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
+        return orders;
+      }catch(e){ return {error:true}; }
+    }
+    const keys = await listOrderKeys();
+    const out = [];
+    for(const k of keys){
+      const r = await safeGet(k);
+      if(r && r.value){ try{ out.push(JSON.parse(r.value)); }catch(_){} }
+    }
+    out.sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
+    return out;
+  }
+  function hashPw(str){
+    let h = 5381;
+    for(let i=0;i<str.length;i++){ h = ((h<<5)+h+str.charCodeAt(i))>>>0; }
+    return 'h'+h.toString(36);
+  }
+
+  // ---------- totals ----------
+  function calc(){
+    let subtotal=0;
+    MENU.forEach(m=> subtotal += cart[m.key]*m.price);
+    const fee = (fulfilment==='delivery' && subtotal>0) ? DELIVERY_FEE : 0;
+    return {subtotal, fee, total:subtotal+fee, count:MENU.reduce((s,m)=>s+cart[m.key],0)};
+  }
+
+  // ---------- ORDER FORM ----------
+  function renderForm(){
+    const t = calc();
+    app.innerHTML = `
+    <div class="wrap">
+      <div class="brand">
+        <div class="kicker">pre-order &middot; batch 1</div>
+        <h1>soultee.au</h1>
+        <div class="sub">salt breads to heal your souls 🥐</div>
+      </div>
+
+      <div class="card welcome">
+        <p class="w-intro">hi everyone! welcome to soultee.au's 1st pre-order batch — thank you for ordering 🤍 hope our salt breads can heal your souls 🥐</p>
+        <p class="w-dm">any questions? dm <strong>@soultee.au</strong> on instagram</p>
+        <div class="w-block">
+          <div class="w-row">📌 <strong>storage:</strong></div>
+          <div class="w-sub">airtight container: 1–2 days &middot; freezer: up to a week</div>
+          <div class="w-row">📌 <strong>reheat (air fryer 180°c):</strong></div>
+          <div class="w-sub">3–4 mins from room temp &middot; 5–8 mins from frozen</div>
+          <div class="w-row">📍 <strong>pickup:</strong> 648 Lonsdale Street, Tower 4</div>
+          <div class="w-row">⏰ <strong>Saturday 6th June, 3pm AEST</strong></div>
+          <div class="w-row">🚚 <strong>delivery available</strong> (CBD only, +$3)</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🧂 choose your breads</h2>
+        <div class="hint">pick your flavours &amp; quantities</div>
+        <div id="menu">
+          ${MENU.map(m=>`
+            <div class="item ${cart[m.key]>0?'active':''}" data-k="${m.key}">
+              <div class="info">
+                <div class="name">${m.name} <span class="price">$${m.price}</span></div>
+                <div class="desc">${m.desc}</div>
+              </div>
+              <div class="stepper">
+                <button data-act="dec" data-k="${m.key}" ${cart[m.key]===0?'disabled':''}>−</button>
+                <span class="qty">${cart[m.key]}</span>
+                <button data-act="inc" data-k="${m.key}">+</button>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📍 pickup or delivery</h2>
+        <div class="hint">choose how you'd like to receive your order</div>
+        <div class="toggle">
+          <label>
+            <input type="radio" name="ful" value="pickup" ${fulfilment==='pickup'?'checked':''}>
+            <div class="t-title">🏃 pickup &middot; free</div>
+            <div class="t-sub">648 Lonsdale St, Tower 4<br>Sat 6 June, 3pm AEST</div>
+          </label>
+          <label>
+            <input type="radio" name="ful" value="delivery" ${fulfilment==='delivery'?'checked':''}>
+            <div class="t-title">🚗 delivery &middot; +$3</div>
+            <div class="t-sub">CBD only</div>
+          </label>
+        </div>
+        <div id="addrField" class="field" style="${fulfilment==='delivery'?'':'display:none'}">
+          <label>delivery address <span class="req">*</span></label>
+          <textarea id="addr" placeholder="your CBD address…"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📝 your details</h2>
+        <div class="field">
+          <label>name <span class="req">*</span></label>
+          <input id="name" placeholder="your name">
+        </div>
+        <div class="field">
+          <label>instagram or phone <span class="req">*</span></label>
+          <input id="contact" placeholder="@handle or mobile number">
+        </div>
+
+        <div class="total">
+          <div><div class="label">total</div></div>
+          <div>
+            <div class="amount">$${t.total}</div>
+            <div class="breakdown">${t.count} item${t.count!==1?'s':''}${t.fee?` &middot; incl $${t.fee} delivery`:''}</div>
+          </div>
+        </div>
+        <button id="place" class="btn btn-primary" ${t.count===0?'disabled':''}>
+          ${t.count===0?'add a bread to order':`place order &middot; $${t.total}`}
+        </button>
+        <div class="err" id="err"></div>
+      </div>
+
+      <div class="foot"><a id="ownerLink">owner login</a></div>
+    </div>`;
+
+    // wire steppers
+    app.querySelectorAll('.stepper button').forEach(b=>{
+      b.addEventListener('click',()=>{
+        const k=b.dataset.k;
+        if(b.dataset.act==='inc') cart[k]++;
+        else if(cart[k]>0) cart[k]--;
+        renderForm();
+      });
+    });
+    // fulfilment
+    app.querySelectorAll('input[name="ful"]').forEach(r=>{
+      r.addEventListener('change',()=>{ fulfilment=r.value; renderForm(); });
+    });
+    app.querySelector('#place').addEventListener('click', placeOrder);
+    app.querySelector('#ownerLink').addEventListener('click', renderAdminGate);
+  }
+
+  // ---------- PLACE ORDER ----------
+  async function placeOrder(){
+    const err = app.querySelector('#err');
+    const name = app.querySelector('#name').value.trim();
+    const contact = app.querySelector('#contact').value.trim();
+    const addr = fulfilment==='delivery' ? app.querySelector('#addr').value.trim() : '';
+    const t = calc();
+    if(t.count===0){ err.textContent='please add at least one bread'; return; }
+    if(!name){ err.textContent='please enter your name'; return; }
+    if(!contact){ err.textContent='please enter your instagram or phone'; return; }
+    if(fulfilment==='delivery' && !addr){ err.textContent='please enter your delivery address'; return; }
+
+    const btn = app.querySelector('#place');
+    btn.disabled=true; btn.textContent='placing order…';
+
+    const items = MENU.filter(m=>cart[m.key]>0).map(m=>({key:m.key,label:m.name,price:m.price,qty:cart[m.key]}));
+    const order = {
+      id:'ord_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+      name, contact, fulfilment, address:addr,
+      items, subtotal:t.subtotal, deliveryFee:t.fee, total:t.total,
+      status:'new', createdAt:Date.now()
+    };
+    const qtys = {original:cart.original, hamcheese:cart.hamcheese, eggmayo:cart.eggmayo, bundle:cart.bundle};
+
+    try{
+      if(BACKEND_URL){
+        // send to Google Sheet backend (opaque response — assume success)
+        await postBackend({action:'order', ...order, qtys});
+      }
+      // always keep a local backup copy on this device
+      try{ await safeSet('order:'+order.id, JSON.stringify(order)); }catch(_){}
+      renderConfirm(order);
+    }catch(e){
+      err.textContent='something went wrong saving your order — please try again';
+      btn.disabled=false; btn.textContent=`place order · $${t.total}`;
+    }
+  }
+
+  // ---------- CONFIRMATION ----------
+  function renderConfirm(o){
+    app.innerHTML = `
+    <div class="wrap">
+      <div class="card confirm">
+        <div class="big">🥐</div>
+        <h2>order placed!</h2>
+        <p>thank you ${o.name} — your soul will be healed 🤍</p>
+
+        <div class="receipt">
+          ${o.items.map(i=>`<div class="line"><span>${i.qty}× ${i.label}</span><span>$${i.qty*i.price}</span></div>`).join('')}
+          ${o.deliveryFee?`<div class="line"><span>delivery</span><span>$${o.deliveryFee}</span></div>`:''}
+          <div class="line grand"><span>total</span><span>$${o.total}</span></div>
+        </div>
+
+        <div class="info-block">
+          ${o.fulfilment==='pickup'
+            ? `<div class="row">📍 <strong>pickup:</strong> 648 Lonsdale St, Tower 4</div><div class="row">⏰ <strong>Saturday 6th June, 3pm AEST</strong></div>`
+            : `<div class="row">🚗 <strong>delivery to:</strong> ${o.address}</div><div class="row">⏰ around <strong>Saturday afternoon</strong></div>`}
+          <div class="row" style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px">
+            <strong>storage:</strong> airtight container 1–2 days, or freezer up to a week
+          </div>
+          <div class="row"><strong>reheat:</strong> air fryer 180°c — 3–4 min (room temp) / 5–8 min (frozen)</div>
+          <div class="row" style="margin-top:8px">questions? dm <strong>@soultee.au</strong> on instagram</div>
+        </div>
+
+        <button class="btn btn-ghost" id="again" style="margin-top:16px">place another order</button>
+      </div>
+    </div>`;
+    app.querySelector('#again').addEventListener('click',()=>{
+      MENU.forEach(m=>cart[m.key]=0); fulfilment='pickup'; renderForm();
+    });
+  }
+
+  // ---------- ADMIN GATE ----------
+  async function renderAdminGate(){
+    const stored = await safeGet('admin:pwhash');
+    const firstTime = !stored;
+    app.innerHTML = `
+    <div class="wrap">
+      <div class="brand"><div class="kicker">owner</div><h1 style="font-size:34px">soultee.au</h1></div>
+      <div class="card">
+        <h2>${firstTime?'🔐 set your owner passcode':'🔐 owner login'}</h2>
+        <div class="hint">${firstTime?'this is the first login — choose a passcode to protect your orders dashboard.':'enter your passcode to view all orders.'}</div>
+        <div class="field">
+          <label>passcode</label>
+          <input id="pw" type="password" placeholder="passcode">
+        </div>
+        <button class="btn btn-primary" id="go" style="margin-top:14px">${firstTime?'set passcode &amp; open':'open dashboard'}</button>
+        <div class="err" id="aerr"></div>
+        <button class="btn btn-ghost" id="back" style="margin-top:8px">← back to order form</button>
+      </div>
+    </div>`;
+    app.querySelector('#back').addEventListener('click', renderForm);
+    app.querySelector('#go').addEventListener('click', async ()=>{
+      const pw = app.querySelector('#pw').value.trim();
+      const aerr = app.querySelector('#aerr');
+      aerr.textContent='';
+      if(pw.length<4){ aerr.textContent='passcode must be at least 4 characters'; return; }
+      const hash = hashPw(pw);
+      try{
+        if(firstTime){
+          const r = await safeSet('admin:pwhash', hash);
+          if(!r) throw new Error('save failed');
+          renderAdmin();
+        }else if(hash===stored.value){
+          renderAdmin();
+        }else{
+          aerr.textContent='wrong passcode';
+        }
+      }catch(e){
+        aerr.textContent='could not save passcode — please try again';
+      }
+    });
+  }
+
+  // ---------- ADMIN DASHBOARD ----------
+  async function renderAdmin(){
+    app.innerHTML = `<div class="wrap"><div class="loading">loading orders…</div></div>`;
+    const result = await listOrders();
+
+    if(result && result.error){
+      app.innerHTML = `
+      <div class="wrap">
+        <div class="admin-head"><h1>orders</h1>
+          <button class="btn btn-ghost" id="exit" style="width:auto;padding:8px 14px;font-size:13px">log out</button></div>
+        <div class="card">
+          <h2>⚠️ couldn't load orders</h2>
+          <div class="hint">the page couldn't reach your Google backend. check that the backend link is pasted correctly in the file, that you're online, and that the script was deployed with access set to "anyone".</div>
+          <button class="btn btn-primary" id="retry" style="margin-top:6px">try again</button>
+        </div>
+      </div>`;
+      app.querySelector('#exit').addEventListener('click', renderForm);
+      app.querySelector('#retry').addEventListener('click', renderAdmin);
+      return;
+    }
+
+    const orders = result;
+    const revenue = orders.reduce((s,o)=>s+o.total,0);
+    const pickup = orders.filter(o=>o.fulfilment==='pickup').length;
+    const delivery = orders.filter(o=>o.fulfilment==='delivery').length;
+    const banner = BACKEND_URL ? '' :
+      `<div class="card" style="background:#fdf2ea;border-color:#e6c4a4;padding:14px 16px">
+        <div style="font-size:13px;color:var(--crust-dark)"><strong>⚠️ backend not connected.</strong> orders are saving to this device only — customers' orders won't appear here. paste your Google link into the file to connect everyone.</div>
+      </div>`;
+
+    // bake counts
+    const counts = {original:0,hamcheese:0,eggmayo:0,bundle:0};
+    orders.forEach(o=>o.items.forEach(i=>counts[i.key]+=i.qty));
+
+    app.innerHTML = `
+    <div class="wrap">
+      <div class="admin-head">
+        <h1>orders</h1>
+        <button class="btn btn-ghost" id="exit" style="width:auto;padding:8px 14px;font-size:13px">log out</button>
+      </div>
+
+      ${banner}
+
+      <div class="stats">
+        <div class="stat"><div class="n">${orders.length}</div><div class="l">orders</div></div>
+        <div class="stat"><div class="n">$${revenue}</div><div class="l">revenue</div></div>
+        <div class="stat"><div class="n">${pickup}/${delivery}</div><div class="l">pickup/del</div></div>
+      </div>
+
+      <div class="card bake">
+        <h2>🧂 baking list</h2>
+        <div class="hint">total breads to make across all orders</div>
+        ${MENU.map(m=>`<div class="brow"><span>${m.name}</span><span class="c">${counts[m.key]}</span></div>`).join('')}
+        <div class="brow" style="border-top:1px solid var(--line);margin-top:4px"><span><strong>note</strong></span><span style="color:var(--soft);font-size:12px">each bundle = 3 breads</span></div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-ghost" id="refresh">↻ refresh</button>
+        <button class="btn btn-ghost" id="copy">⧉ copy all orders</button>
+      </div>
+
+      <div id="orderList">
+        ${orders.length===0 ? `<div class="empty">no orders yet 🥐</div>` :
+          orders.map(o=>`
+            <div class="order ${o.status==='done'?'done':''}" data-id="${o.id}">
+              <div class="otop">
+                <div>
+                  <div class="who">${o.name}</div>
+                  <div class="meta">${o.contact}${o.fulfilment==='delivery'?' &middot; '+o.address:''}</div>
+                  <div class="meta">${new Date(o.createdAt).toLocaleString('en-AU',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})}</div>
+                </div>
+                <span class="tag ${o.fulfilment==='pickup'?'tag-pickup':'tag-delivery'}">${o.fulfilment}</span>
+              </div>
+              <ul>${o.items.map(i=>`<li><span>${i.qty}× ${i.label}</span><span>$${i.qty*i.price}</span></li>`).join('')}${o.deliveryFee?`<li><span>delivery</span><span>$${o.deliveryFee}</span></li>`:''}</ul>
+              <div class="obot">
+                <span class="ot">$${o.total}</span>
+                <button class="mark" data-id="${o.id}">${o.status==='done'?'✓ done':'mark done'}</button>
+              </div>
+            </div>`).join('')}
+      </div>
+    </div>`;
+
+    app.querySelector('#exit').addEventListener('click', renderForm);
+    app.querySelector('#refresh').addEventListener('click', renderAdmin);
+    app.querySelector('#copy').addEventListener('click', ()=>{
+      let txt = `soultee.au orders (${orders.length})\n\n`;
+      orders.forEach(o=>{
+        txt += `${o.name} — ${o.contact} [${o.fulfilment}${o.fulfilment==='delivery'?': '+o.address:''}]\n`;
+        o.items.forEach(i=>txt+=`  ${i.qty}× ${i.label} ($${i.qty*i.price})\n`);
+        if(o.deliveryFee) txt+=`  delivery ($${o.deliveryFee})\n`;
+        txt += `  total: $${o.total}${o.status==='done'?' ✓done':''}\n\n`;
+      });
+      txt += `BAKING LIST\n`;
+      MENU.forEach(m=>txt+=`  ${m.name}: ${counts[m.key]}\n`);
+      txt += `\nTOTAL REVENUE: $${revenue}`;
+      navigator.clipboard.writeText(txt).then(()=>{
+        const b=app.querySelector('#copy'); b.textContent='✓ copied!'; setTimeout(()=>b.textContent='⧉ copy all orders',1500);
+      }).catch(()=>{});
+    });
+    app.querySelectorAll('.mark').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const id=btn.dataset.id;
+        const o=orders.find(x=>x.id===id);
+        if(!o) return;
+        o.status = o.status==='done'?'new':'done';
+        if(BACKEND_URL){
+          try{ await postBackend({action:'status', id:id, status:o.status}); }catch(e){}
+          // optimistic UI update (no full reload)
+          btn.textContent = o.status==='done' ? '✓ done' : 'mark done';
+          const card = btn.closest('.order'); if(card) card.classList.toggle('done', o.status==='done');
+        }else{
+          try{ await safeSet('order:'+id, JSON.stringify(o)); renderAdmin(); }catch(e){}
+        }
+      });
+    });
+  }
+
+  // ---------- boot ----------
+  renderForm();
+})();
+</script>
